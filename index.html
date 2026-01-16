@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Calculate age in years, months, weeks, days, hours, minutes, and seconds with our beautiful and responsive Age Calculator. Tailwind CSS ensures an elegant design | Web Dev Services & News">
+    <meta name="keywords"
+        content="Age Calculator, JavaScript Age Calculator, Responsive Design, Tailwind CSS, Web Dev Services & News">
+    <meta name="author" content="Web Dev Services & News">
+    <title>Age Calculator | Web Dev Services & News</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 800%22%3E%3Ctext x=%2250%22 y=%22100%22 font-size=%2270%22 fill=%22%23e5e5e5%22 font-family=%22Arial, Helvetica, sans-serif%22%3EAge%3C/text%3E%3Ctext x=%2250%22 y=%22180%22 font-size=%2270%22 fill=%22%23e5e5e5%22 font-family=%22Arial, Helvetica, sans-serif%22%3ECalendar%3C/text%3E%3Ctext x=%2250%22 y=%22260%22 font-size=%2270%22 fill=%22%23e5e5e5%22 font-family=%22Arial, Helvetica, sans-serif%22%3EDate%3C/text%3E%3Ctext x=%2250%22 y=%22340%22 font-size=%2270%22 fill=%22%23e5e5e5%22 font-family=%22Arial, Helvetica, sans-serif%22%3ETime%3C/text%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 0.2;
+            z-index: -1;
+        }
+    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7712219492728016"
+     crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800 font-sans relative">
+    <div class="min-h-screen flex flex-col justify-center items-center px-4">
+        <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+            <h1 class="text-2xl font-bold text-center mb-4">Age Calculator</h1>
+            <p class="text-sm text-gray-600 mb-6 text-center">
+                Determine your age or interval between two dates in years, months, weeks, days, hours, minutes, and
+                seconds.
+            </p>
+
+            <div class="mb-4">
+                <label for="dob" class="block text-sm font-medium mb-2">Date of Birth</label>
+                <input type="date" id="dob"
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div class="mb-4">
+                <label for="reference-date" class="block text-sm font-medium mb-2">Age at the Date of</label>
+                <input type="date" id="reference-date"
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <button id="calculate"
+                class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">Calculate</button>
+            <button id="clear-storage"
+                class="w-full bg-red-500 text-white py-2 rounded-md mt-4 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2">Start
+                Again</button>
+
+            <div id="result" class="mt-6 hidden bg-blue-50 text-blue-700 p-4 rounded-md text-sm fade-in">
+                <h2 class="text-lg font-bold mb-4">Result</h2>
+                <ul id="result-list" class="list-disc list-inside space-y-1"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set the default value of both date fields to the current date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dob').value = today;
+        document.getElementById('reference-date').value = today;
+
+        // Check if saved data exists in localStorage
+        const savedDob = localStorage.getItem('dob');
+        const savedReferenceDate = localStorage.getItem('referenceDate');
+
+        if (savedDob) {
+            document.getElementById('dob').value = savedDob;
+        }
+        if (savedReferenceDate) {
+            document.getElementById('reference-date').value = savedReferenceDate;
+        }
+
+        // Handle the calculate button click
+        document.getElementById('calculate').addEventListener('click', function () {
+            const dob = new Date(document.getElementById('dob').value);
+            const referenceDate = new Date(document.getElementById('reference-date').value);
+
+            if (!dob || !referenceDate || dob > referenceDate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Input',
+                    text: 'Please enter valid dates. Ensure the Date of Birth is earlier than the reference date.',
+                });
+                return;
+            }
+
+            const diff = referenceDate - dob;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            const weeks = Math.floor(days / 7);
+            const months = Math.floor(days / 30.44);
+            const years = Math.floor(months / 12);
+
+            const results = [
+                `Age: ${years} years ${months % 12} months ${days % 30} days`,
+                `or ${months} months`,
+                `${days % 30} days`,
+                `or ${weeks} weeks`,
+                `${days % 7} days`,
+                `or ${days} days`,
+                `or ${hours} hours`,
+                `or ${minutes} minutes`,
+                `or ${seconds} seconds`
+            ];
+
+            // Save the results and date values to localStorage
+            localStorage.setItem('dob', document.getElementById('dob').value);
+            localStorage.setItem('referenceDate', document.getElementById('reference-date').value);
+            localStorage.setItem('ageCalculatorResult', JSON.stringify(results));
+
+            // Show the results with a typing effect
+            const resultList = document.getElementById('result-list');
+            resultList.innerHTML = '';
+            let i = 0;
+
+            function typeWriter() {
+                if (i < results.length) {
+                    const li = document.createElement('li');
+                    li.textContent = results[i];
+                    resultList.appendChild(li);
+                    i++;
+                    setTimeout(typeWriter, 500);
+                }
+            }
+
+            typeWriter();
+            document.getElementById('result').classList.remove('hidden');
+        });
+
+        // Handle "Start Again" button click
+        document.getElementById('clear-storage').addEventListener('click', function () {
+            // Clear date fields and result from localStorage
+            localStorage.removeItem('dob');
+            localStorage.removeItem('referenceDate');
+            localStorage.removeItem('ageCalculatorResult');
+
+            // Reset date fields to today's date
+            document.getElementById('dob').value = today;
+            document.getElementById('reference-date').value = today;
+
+            // Hide the result
+            document.getElementById('result').classList.add('hidden');
+        });
+
+        // Load saved data if exists
+        const savedResult = localStorage.getItem('ageCalculatorResult');
+        if (savedResult) {
+            const results = JSON.parse(savedResult);
+            const resultList = document.getElementById('result-list');
+            resultList.innerHTML = '';
+
+            results.forEach((line) => {
+                const li = document.createElement('li');
+                li.textContent = line;
+                resultList.appendChild(li);
+            });
+
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+</body>
+
+</html>
